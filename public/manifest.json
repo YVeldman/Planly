@@ -1,0 +1,17 @@
+{
+  "name": "Planly — Plan life together",
+  "short_name": "Planly",
+  "description": "De alles-in-één gezinsplanner.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#f6f3ef",
+  "theme_color": "#6b8a5c",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

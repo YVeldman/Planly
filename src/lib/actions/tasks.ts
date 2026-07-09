@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
+import { sendPushToUser } from "@/lib/push";
 
 const taskSchema = z.object({
   title: z.string().trim().min(1, "Geef de taak een titel."),
@@ -42,6 +43,14 @@ export async function createTaskAction(
       assigneeId: assigneeId || null,
     },
   });
+
+  if (assigneeId && assigneeId !== user.id) {
+    await sendPushToUser(assigneeId, {
+      title: "Nieuwe taak toegewezen",
+      body: `${user.name} heeft je een taak gegeven: ${title}`,
+      url: "/dashboard/tasks",
+    }).catch(() => {});
+  }
 
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/tasks");

@@ -17,6 +17,7 @@ export const metadata: Metadata = {
   title: "Planly — Plan life together",
   description:
     "De alles-in-één gezinsplanner. Agenda, taken, boodschappen en maaltijden overzichtelijk in één rustige app voor het hele gezin.",
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({

@@ -2,6 +2,7 @@ import { requireUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { MemberCard } from "@/components/dashboard/MemberCard";
 import { AddMemberForm } from "@/components/dashboard/AddMemberForm";
+import { NotificationToggle } from "@/components/dashboard/NotificationToggle";
 
 export default async function FamilyPage() {
   const user = await requireUser();
@@ -19,6 +20,8 @@ export default async function FamilyPage() {
           {family?.members.length} {family?.members.length === 1 ? "gezinslid" : "gezinsleden"}
         </p>
       </div>
+
+      <NotificationToggle />
 
       <div className="mb-4 space-y-3">
         {family?.members.map((member) => (
