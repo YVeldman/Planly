@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f6f3ef;
+  --foreground: #2f2f2f;
+
+  /* Planly brand palette */
+  --color-sage-50: #f4f6f2;
+  --color-sage-100: #e6ebe2;
+  --color-sage-200: #cfd9c6;
+  --color-sage-300: #a7b89a;
+  --color-sage-400: #86a077;
+  --color-sage-500: #6b8a5c;
+  --color-sage-600: #5e6b5e;
+  --color-sage-700: #465247;
+  --color-sage-800: #333c33;
+  --color-sage-900: #232a23;
+
+  --color-cream-50: #fdfbf8;
+  --color-cream-100: #f6f3ef;
+  --color-cream-200: #eadfd2;
+  --color-cream-300: #e0d0bd;
+
+  --color-peach-100: #f6e2d6;
+  --color-peach-200: #e9c5b2;
+  --color-peach-300: #ddab8f;
+
+  --color-ink-900: #2f2f2f;
+  --color-ink-700: #4a4a4a;
+  --color-ink-500: #767676;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-sage-50: var(--color-sage-50);
+  --color-sage-100: var(--color-sage-100);
+  --color-sage-200: var(--color-sage-200);
+  --color-sage-300: var(--color-sage-300);
+  --color-sage-400: var(--color-sage-400);
+  --color-sage-500: var(--color-sage-500);
+  --color-sage-600: var(--color-sage-600);
+  --color-sage-700: var(--color-sage-700);
+  --color-sage-800: var(--color-sage-800);
+  --color-sage-900: var(--color-sage-900);
+
+  --color-cream-50: var(--color-cream-50);
+  --color-cream-100: var(--color-cream-100);
+  --color-cream-200: var(--color-cream-200);
+  --color-cream-300: var(--color-cream-300);
+
+  --color-peach-100: var(--color-peach-100);
+  --color-peach-200: var(--color-peach-200);
+  --color-peach-300: var(--color-peach-300);
+
+  --color-ink-900: var(--color-ink-900);
+  --color-ink-700: var(--color-ink-700);
+  --color-ink-500: var(--color-ink-500);
+
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-playfair);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+* {
+  border-color: var(--color-sage-200);
+}

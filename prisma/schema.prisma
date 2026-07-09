@@ -1,0 +1,68 @@
+// Prisma schema for Planly - the family planner app
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Family {
+  id         String   @id @default(cuid())
+  name       String
+  inviteCode String   @unique @default(cuid())
+  createdAt  DateTime @default(now())
+
+  members User[]
+  events  Event[]
+  tasks   Task[]
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  color        String   @default("#7C9473")
+  role         String   @default("member") // owner | member
+  createdAt    DateTime @default(now())
+
+  familyId String
+  family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  events Event[] @relation("EventAssignee")
+  tasks  Task[]  @relation("TaskAssignee")
+}
+
+model Event {
+  id        String    @id @default(cuid())
+  title     String
+  category  String    @default("other") // school | work | health | family | sport | meal | other
+  startTime DateTime
+  endTime   DateTime?
+  notes     String?
+  createdAt DateTime  @default(now())
+
+  familyId String
+  family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  assigneeId String?
+  assignee   User?   @relation("EventAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+}
+
+model Task {
+  id        String    @id @default(cuid())
+  title     String
+  done      Boolean   @default(false)
+  dueDate   DateTime?
+  category  String    @default("other")
+  createdAt DateTime  @default(now())
+
+  familyId String
+  family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  assigneeId String?
+  assignee   User?   @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+}
