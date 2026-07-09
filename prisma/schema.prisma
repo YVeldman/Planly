@@ -5,7 +5,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -21,13 +21,14 @@ model Family {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  name         String
-  email        String   @unique
-  passwordHash String
-  color        String   @default("#7C9473")
-  role         String   @default("member") // owner | member
-  createdAt    DateTime @default(now())
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  passwordHash  String
+  color         String    @default("#7C9473")
+  role          String    @default("member") // owner | member
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
 
   familyId String
   family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
@@ -35,7 +36,18 @@ model User {
   events Event[] @relation("EventAssignee")
   tasks  Task[]  @relation("TaskAssignee")
 
-  pushSubscriptions PushSubscription[]
+  pushSubscriptions  PushSubscription[]
+  verificationTokens VerificationToken[]
+}
+
+model VerificationToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model PushSubscription {
