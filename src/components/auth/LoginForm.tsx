@@ -11,17 +11,9 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
     <form action={formAction} className="space-y-5">
       <input type="hidden" name="callbackUrl" value={callbackUrl ?? "/dashboard"} />
       {state?.error && (
-        <div className="rounded-lg bg-peach-100 px-4 py-2.5 text-sm text-[#a35b36]">
-          <p>{state.error}</p>
-          {state.needsVerification && (
-            <Link
-              href={`/check-email?email=${encodeURIComponent(state.email ?? "")}`}
-              className="mt-1 inline-block font-medium underline"
-            >
-              Bevestigingsmail opnieuw versturen
-            </Link>
-          )}
-        </div>
+        <p className="rounded-lg bg-peach-100 px-4 py-2.5 text-sm text-[#a35b36]">
+          {state.error}
+        </p>
       )}
       <div>
         <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-ink-900">

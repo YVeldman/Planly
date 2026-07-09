@@ -4,14 +4,7 @@ import { useTransition } from "react";
 import { Trash2, Crown } from "lucide-react";
 import { removeFamilyMemberAction } from "@/lib/actions/family";
 
-type Member = {
-  id: string;
-  name: string;
-  email: string;
-  color: string;
-  role: string;
-  emailVerified: Date | null;
-};
+type Member = { id: string; name: string; email: string; color: string; role: string };
 
 export function MemberCard({ member, isSelf }: { member: Member; isSelf: boolean }) {
   const [isPending, startTransition] = useTransition();
@@ -30,11 +23,6 @@ export function MemberCard({ member, isSelf }: { member: Member; isSelf: boolean
             {member.name} {isSelf && <span className="font-normal text-ink-400">(jij)</span>}
           </p>
           {member.role === "owner" && <Crown className="h-3.5 w-3.5 shrink-0 text-peach-300" />}
-          {!member.emailVerified && (
-            <span className="shrink-0 rounded-full bg-peach-100 px-2 py-0.5 text-[10px] font-medium text-[#a35b36]">
-              Nog niet bevestigd
-            </span>
-          )}
         </div>
         <p className="truncate text-xs text-ink-500">{member.email}</p>
       </div>

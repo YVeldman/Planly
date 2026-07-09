@@ -62,9 +62,6 @@ export function AddMemberForm() {
         minLength={8}
         className="w-full rounded-lg border border-sage-200 px-3 py-2 text-sm outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200"
       />
-      <p className="text-xs text-ink-500">
-        We sturen een bevestigingsmail naar dit adres. Pas na bevestigen kan dit gezinslid inloggen.
-      </p>
       <div>
         <p className="mb-1.5 text-xs font-medium text-ink-700">Kleur</p>
         <input type="hidden" name="color" value={color} />

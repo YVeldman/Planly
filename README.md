@@ -6,9 +6,8 @@ De alles-in-één gezinsplanner: agenda, taken en gezinsleden in één rustige, 
 
 - Next.js (App Router) + TypeScript + Tailwind CSS
 - Prisma + PostgreSQL
-- NextAuth (Credentials provider) met verplichte e-mailbevestiging
+- NextAuth (Credentials provider)
 - Web Push (taak-notificaties) via `web-push`
-- Resend voor transactionele e-mail (accountbevestiging)
 
 ## Lokaal draaien
 
@@ -24,7 +23,7 @@ npm run dev
 
 Lokaal (of met een niet-pooled database) mogen `DATABASE_URL` en `DIRECT_URL` gewoon dezelfde waarde hebben.
 
-Open [http://localhost:3000](http://localhost:3000). Zonder een echte `RESEND_API_KEY` wordt de bevestigingslink gewoon in de server-console gelogd, zodat je lokaal kunt testen zonder e-maildienst.
+Open [http://localhost:3000](http://localhost:3000).
 
 ## Deployen naar Vercel
 
@@ -51,24 +50,17 @@ Open [http://localhost:3000](http://localhost:3000). Zonder een echte `RESEND_AP
    | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | genereer met `npx web-push generate-vapid-keys` |
    | `VAPID_PRIVATE_KEY` | idem, het private deel |
    | `VAPID_SUBJECT` | `mailto:jouw-email@domein.nl` |
-   | `RESEND_API_KEY` | API-key uit je [Resend](https://resend.com) account |
-   | `EMAIL_FROM` | bijv. `Planly <onboarding@resend.dev>` (zie hieronder) |
-   | `NEXT_PUBLIC_APP_URL` | de definitieve URL van je Vercel-deployment (zie die pas na de eerste deploy rechtsboven in Vercel, en zet 'm dan pas goed) |
 
    Vul elke variabele apart in via **"+ Add More"** (Key + Value), of gebruik de link **"paste the .env contents"** om er meerdere in één keer uit een geplakt blok te laten splitsen — plak dat blok niet in het Value-veld van één handmatige variabele.
 
 4. **Database-schema**: dit gebeurt automatisch — de `build`-script draait `prisma migrate deploy` vóór `next build`, dus zolang `DATABASE_URL`/`DIRECT_URL` als env var staan, hoef je niets extra te configureren.
 
-5. **Resend-domein**: zonder een geverifieerd eigen domein kan Resend alleen naar het e-mailadres van je eigen Resend-account mailen (testmodus). Voor echte gebruikers: voeg in Resend een domein toe (Domains → Add Domain) en zet de gevraagde DNS-records (SPF/DKIM) bij je domeinregistrar. Gebruik daarna bijv. `EMAIL_FROM="Planly <noreply@jouwdomein.nl>"`.
-
-6. **Deploy**. Vercel bouwt en publiceert automatisch bij elke push naar de gekoppelde branch.
+5. **Deploy**. Vercel bouwt en publiceert automatisch bij elke push naar de gekoppelde branch.
 
 ## Projectstructuur
 
-- `src/app` — pagina's (landing, login/signup, e-mailverificatie, dashboard)
+- `src/app` — pagina's (landing, login/signup, dashboard)
 - `src/components` — UI-componenten (landing, auth, dashboard)
 - `src/lib/actions` — server actions (auth, events, tasks, family)
-- `src/lib/email.ts` — Resend-integratie voor transactionele e-mail
-- `src/lib/verification.ts` — aanmaken/versturen van e-mailverificatietokens
 - `src/lib/push.ts` — Web Push verzending
-- `prisma/schema.prisma` — datamodel (Family, User, Event, Task, PushSubscription, VerificationToken)
+- `prisma/schema.prisma` — datamodel (Family, User, Event, Task, PushSubscription)

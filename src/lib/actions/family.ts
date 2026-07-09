@@ -5,7 +5,6 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
-import { createAndSendVerificationEmail } from "@/lib/verification";
 
 const memberSchema = z.object({
   name: z.string().trim().min(2, "Vul een naam in."),
@@ -42,7 +41,7 @@ export async function addFamilyMemberAction(
 
   const passwordHash = await bcrypt.hash(password, 10);
 
-  const member = await prisma.user.create({
+  await prisma.user.create({
     data: {
       name,
       email,
@@ -52,8 +51,6 @@ export async function addFamilyMemberAction(
       familyId: user.familyId,
     },
   });
-
-  await createAndSendVerificationEmail(member);
 
   revalidatePath("/dashboard/family");
   revalidatePath("/dashboard");
