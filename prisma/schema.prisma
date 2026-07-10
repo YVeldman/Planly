@@ -14,11 +14,14 @@ model Family {
   id         String   @id @default(cuid())
   name       String
   inviteCode String   @unique @default(cuid())
+  icsToken   String   @unique @default(cuid())
   createdAt  DateTime @default(now())
 
-  members User[]
-  events  Event[]
-  tasks   Task[]
+  members       User[]
+  events        Event[]
+  tasks         Task[]
+  contacts      Contact[]
+  externalFeeds ExternalCalendarFeed[]
 }
 
 model User {
@@ -64,6 +67,40 @@ model Event {
 
   assigneeId String?
   assignee   User?   @relation("EventAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+
+  source         String                @default("planly") // planly | external
+  externalUid    String?
+  externalFeedId String?
+  externalFeed   ExternalCalendarFeed? @relation(fields: [externalFeedId], references: [id], onDelete: Cascade)
+
+  @@unique([externalFeedId, externalUid])
+}
+
+model ExternalCalendarFeed {
+  id           String    @id @default(cuid())
+  name         String
+  url          String
+  lastSyncedAt DateTime?
+  lastError    String?
+  createdAt    DateTime  @default(now())
+
+  familyId String
+  family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  events Event[]
+}
+
+model Contact {
+  id        String   @id @default(cuid())
+  name      String
+  role      String? // e.g. huisarts, school, oppas
+  phone     String?
+  email     String?
+  notes     String?
+  createdAt DateTime @default(now())
+
+  familyId String
+  family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
 }
 
 model Task {

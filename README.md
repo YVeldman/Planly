@@ -57,10 +57,19 @@ Open [http://localhost:3000](http://localhost:3000).
 
 5. **Deploy**. Vercel bouwt en publiceert automatisch bij elke push naar de gekoppelde branch.
 
+## Agenda koppelen met Apple of Google Agenda
+
+Via **Instellingen → Agenda koppelen** kun je:
+
+- **Exporteren**: kopieer de persoonlijke iCal-link en voeg die toe als agenda-abonnement in Apple Agenda of Google Agenda (Instellingen → Agenda toevoegen → Op URL abonneren). Alle Planly-afspraken verschijnen dan automatisch in die app.
+- **Importeren**: plak de geheime iCal-link van je eigen Apple- of Google Agenda om die afspraken in Planly te tonen. Gebruik de sync-knop om handmatig te verversen.
+
 ## Projectstructuur
 
 - `src/app` — pagina's (landing, login/signup, dashboard)
+- `src/app/api/calendar/[token]` — publieke iCal-exportfeed per gezin
 - `src/components` — UI-componenten (landing, auth, dashboard)
-- `src/lib/actions` — server actions (auth, events, tasks, family)
+- `src/lib/actions` — server actions (auth, events, tasks, family, contacts, calendarSync, profile)
 - `src/lib/push.ts` — Web Push verzending
-- `prisma/schema.prisma` — datamodel (Family, User, Event, Task, PushSubscription)
+- `src/lib/ics.ts` / `src/lib/icsParser.ts` — iCalendar export/import
+- `prisma/schema.prisma` — datamodel (Family, User, Event, Task, Contact, ExternalCalendarFeed, PushSubscription)

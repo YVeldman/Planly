@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, CalendarDays, CheckCircle2, Users } from "lucide-react";
+import { Home, CalendarDays, CheckCircle2, Contact, Settings } from "lucide-react";
 
 const items = [
   { href: "/dashboard", label: "Home", icon: Home },
   { href: "/dashboard/calendar", label: "Agenda", icon: CalendarDays },
   { href: "/dashboard/tasks", label: "Taken", icon: CheckCircle2 },
-  { href: "/dashboard/family", label: "Gezin", icon: Users },
+  { href: "/dashboard/contacts", label: "Contacten", icon: Contact },
+  { href: "/dashboard/settings", label: "Instellingen", icon: Settings },
 ];
 
 export function DashboardNavDesktop() {

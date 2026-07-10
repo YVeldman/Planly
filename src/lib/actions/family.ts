@@ -52,7 +52,7 @@ export async function addFamilyMemberAction(
     },
   });
 
-  revalidatePath("/dashboard/family");
+  revalidatePath("/dashboard/settings");
   revalidatePath("/dashboard");
 }
 
@@ -67,6 +67,6 @@ export async function removeFamilyMemberAction(memberId: string) {
     where: { id: memberId, familyId: user.familyId },
   });
 
-  revalidatePath("/dashboard/family");
+  revalidatePath("/dashboard/settings");
   revalidatePath("/dashboard");
 }
