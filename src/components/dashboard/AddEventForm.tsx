@@ -99,6 +99,11 @@ export function AddEventForm({
           </option>
         ))}
       </select>
+      <input
+        name="location"
+        placeholder="Locatie (bijv. Tandartspraktijk, Hoofdstraat 12)"
+        className="w-full rounded-lg border border-sage-200 px-3 py-2 text-sm outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200"
+      />
       <button
         type="submit"
         disabled={pending}

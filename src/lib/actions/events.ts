@@ -12,6 +12,7 @@ const eventSchema = z.object({
   startTime: z.string().min(1, "Kies een starttijd."),
   endTime: z.string().optional(),
   assigneeId: z.string().optional(),
+  location: z.string().trim().optional(),
   notes: z.string().optional(),
 });
 
@@ -34,6 +35,7 @@ export async function createEventAction(
     startTime: formData.get("startTime"),
     endTime: formData.get("endTime") || undefined,
     assigneeId: formData.get("assigneeId") || undefined,
+    location: formData.get("location") || undefined,
     notes: formData.get("notes") || undefined,
   });
 
@@ -41,7 +43,7 @@ export async function createEventAction(
     return { error: parsed.error.issues[0]?.message ?? "Ongeldige invoer." };
   }
 
-  const { title, category, date, startTime, endTime, assigneeId, notes } = parsed.data;
+  const { title, category, date, startTime, endTime, assigneeId, location, notes } = parsed.data;
 
   await prisma.event.create({
     data: {
@@ -49,6 +51,7 @@ export async function createEventAction(
       category,
       startTime: toDateTime(date, startTime),
       endTime: endTime ? toDateTime(date, endTime) : null,
+      location: location || null,
       notes: notes || null,
       familyId: user.familyId,
       assigneeId: assigneeId || null,

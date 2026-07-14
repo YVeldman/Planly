@@ -50,6 +50,7 @@ async function runSync(feedId: string, familyId: string) {
             category: "other",
             startTime: event.start,
             endTime: event.end,
+            location: event.location,
             notes: event.description,
             familyId,
             source: "external",
@@ -60,6 +61,7 @@ async function runSync(feedId: string, familyId: string) {
             title: event.title,
             startTime: event.start,
             endTime: event.end,
+            location: event.location,
             notes: event.description,
           },
         })

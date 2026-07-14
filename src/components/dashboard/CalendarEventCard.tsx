@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { X } from "lucide-react";
+import { MapPin, X } from "lucide-react";
 import { deleteEventAction } from "@/lib/actions/events";
 import { getCategory } from "@/lib/categories";
 
@@ -11,6 +11,7 @@ type Event = {
   category: string;
   startTime: Date;
   endTime: Date | null;
+  location: string | null;
   assignee: { name: string; color: string } | null;
 };
 
@@ -28,6 +29,11 @@ export function CalendarEventCard({ event }: { event: Event }) {
       <p className={`truncate text-[11px] font-semibold ${category.fg}`}>{time}</p>
       <p className="truncate text-xs font-medium text-ink-900">{event.title}</p>
       {event.assignee && <p className="truncate text-[10px] text-ink-500">{event.assignee.name}</p>}
+      {event.location && (
+        <p className="flex items-center gap-0.5 truncate text-[10px] text-ink-400">
+          <MapPin className="h-2.5 w-2.5 shrink-0" /> {event.location}
+        </p>
+      )}
       <button
         type="button"
         disabled={isPending}

@@ -27,6 +27,7 @@ export type IcsEvent = {
   title: string;
   startTime: Date;
   endTime: Date | null;
+  location?: string | null;
   notes?: string | null;
   assigneeName?: string | null;
 };
@@ -57,6 +58,9 @@ export function buildIcsFeed(calendarName: string, events: IcsEvent[]) {
       `DTEND:${toIcsDate(end)}`,
       `SUMMARY:${escapeIcsText(event.title)}`
     );
+    if (event.location) {
+      lines.push(`LOCATION:${escapeIcsText(event.location)}`);
+    }
     if (description) {
       lines.push(`DESCRIPTION:${escapeIcsText(description)}`);
     }

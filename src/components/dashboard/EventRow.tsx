@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { Trash2 } from "lucide-react";
+import { MapPin, Trash2 } from "lucide-react";
 import { deleteEventAction } from "@/lib/actions/events";
 import { getCategory } from "@/lib/categories";
 
@@ -11,6 +11,7 @@ type Event = {
   category: string;
   startTime: Date;
   endTime: Date | null;
+  location: string | null;
   assignee: { name: string; color: string } | null;
 };
 
@@ -31,6 +32,11 @@ export function EventRow({ event }: { event: Event }) {
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium text-ink-900">{event.title}</p>
         <p className="text-xs text-ink-500">{event.assignee ? event.assignee.name : "Hele gezin"}</p>
+        {event.location && (
+          <p className="mt-0.5 flex items-center gap-1 truncate text-xs text-ink-400">
+            <MapPin className="h-3 w-3 shrink-0" /> {event.location}
+          </p>
+        )}
       </div>
       <span className="shrink-0 text-xs font-medium text-ink-500">{time}</span>
       <button

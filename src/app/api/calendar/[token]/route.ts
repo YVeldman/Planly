@@ -24,6 +24,7 @@ export async function GET(
     title: event.title,
     startTime: event.startTime,
     endTime: event.endTime,
+    location: event.location,
     notes: event.notes,
     assigneeName: event.assignee?.name,
   })));

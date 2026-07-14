@@ -3,6 +3,7 @@ export type ParsedIcsEvent = {
   title: string;
   start: Date;
   end: Date | null;
+  location: string | null;
   description: string | null;
 };
 
@@ -77,6 +78,7 @@ export function parseIcs(raw: string): ParsedIcsEvent[] {
           title: current.title ?? "Afspraak",
           start: current.start,
           end: current.end ?? null,
+          location: current.location ?? null,
           description: current.description ?? null,
         });
       }
@@ -97,6 +99,9 @@ export function parseIcs(raw: string): ParsedIcsEvent[] {
         break;
       case "DESCRIPTION":
         current.description = unescapeIcsText(property.value.trim());
+        break;
+      case "LOCATION":
+        current.location = unescapeIcsText(property.value.trim());
         break;
       case "DTSTART": {
         const date = parseIcsDate(property.value.trim());
