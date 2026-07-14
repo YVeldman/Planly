@@ -23,6 +23,7 @@ model Family {
   tasks         Task[]
   contacts      Contact[]
   externalFeeds ExternalCalendarFeed[]
+  meals         Meal[]
 }
 
 model User {
@@ -118,4 +119,17 @@ model Task {
 
   assigneeId String?
   assignee   User?   @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+}
+
+model Meal {
+  id        String   @id @default(cuid())
+  title     String
+  date      DateTime
+  prepTime  Int? // minutes
+  notes     String?
+  favorite  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  familyId String
+  family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
 }

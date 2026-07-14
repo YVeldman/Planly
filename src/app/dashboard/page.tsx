@@ -3,8 +3,11 @@ import { requireUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { EventRow } from "@/components/dashboard/EventRow";
 import { TaskRow } from "@/components/dashboard/TaskRow";
+import { MealCard } from "@/components/dashboard/MealCard";
 import { AddEventForm } from "@/components/dashboard/AddEventForm";
 import { AddTaskForm } from "@/components/dashboard/AddTaskForm";
+import { AddMealForm } from "@/components/dashboard/AddMealForm";
+import { WeekStrip } from "@/components/dashboard/WeekStrip";
 import {
   APP_TIMEZONE,
   addDaysToDateString,
@@ -26,7 +29,7 @@ export default async function DashboardPage() {
   const dayStart = zonedMidnight(todayStr);
   const dayEnd = zonedMidnight(addDaysToDateString(todayStr, 1));
 
-  const [events, tasks, members] = await Promise.all([
+  const [events, tasks, meals, members] = await Promise.all([
     prisma.event.findMany({
       where: {
         familyId: user.familyId,
@@ -40,6 +43,10 @@ export default async function DashboardPage() {
       include: { assignee: true },
       orderBy: { createdAt: "desc" },
       take: 6,
+    }),
+    prisma.meal.findMany({
+      where: { familyId: user.familyId, date: { gte: dayStart, lt: dayEnd } },
+      orderBy: { createdAt: "asc" },
     }),
     prisma.user.findMany({
       where: { familyId: user.familyId },
@@ -64,6 +71,8 @@ export default async function DashboardPage() {
         <p className="mt-1 text-sm capitalize text-ink-500">{dateLabel}</p>
       </div>
 
+      <WeekStrip reference={dayStart} todayStr={todayStr} />
+
       <section className="mb-8">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-500">Vandaag</h2>
@@ -83,6 +92,28 @@ export default async function DashboardPage() {
         </div>
         <div className="mt-3">
           <AddEventForm members={members} defaultDate={todayStr} />
+        </div>
+      </section>
+
+      <section className="mb-8">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-500">Eten vandaag</h2>
+          <Link href="/dashboard/meals" className="text-xs font-medium text-sage-600 hover:underline">
+            Alle maaltijden
+          </Link>
+        </div>
+        <div className="space-y-2">
+          {meals.length === 0 && (
+            <p className="rounded-xl bg-white px-4 py-6 text-center text-sm text-ink-500 shadow-sm">
+              Nog geen maaltijd gepland voor vandaag.
+            </p>
+          )}
+          {meals.map((meal) => (
+            <MealCard key={meal.id} meal={meal} />
+          ))}
+        </div>
+        <div className="mt-3">
+          <AddMealForm defaultDate={todayStr} />
         </div>
       </section>
 
