@@ -15,6 +15,7 @@ model Family {
   name       String
   inviteCode String   @unique @default(cuid())
   icsToken   String   @unique @default(cuid())
+  plan       String   @default("free") // free | premium
   createdAt  DateTime @default(now())
 
   members       User[]

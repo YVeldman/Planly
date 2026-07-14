@@ -47,9 +47,14 @@ export default async function SettingsPage() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-500">
-          Agenda koppelen
-        </h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-500">
+            Agenda koppelen
+          </h2>
+          <span className="rounded-full bg-sage-100 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-sage-700">
+            {family?.plan === "premium" ? "Premium" : "Gratis"}
+          </span>
+        </div>
         <CalendarSyncSection icsToken={family?.icsToken ?? ""} feeds={family?.externalFeeds ?? []} />
       </section>
     </div>
