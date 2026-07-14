@@ -78,7 +78,7 @@ export default async function DashboardPage() {
             </p>
           )}
           {events.map((event) => (
-            <EventRow key={event.id} event={event} />
+            <EventRow key={event.id} event={event} members={members} />
           ))}
         </div>
         <div className="mt-3">
@@ -102,7 +102,7 @@ export default async function DashboardPage() {
             </p>
           )}
           {tasks.map((task) => (
-            <TaskRow key={task.id} task={task} />
+            <TaskRow key={task.id} task={task} members={members} />
           ))}
         </div>
         <div className="mt-3">

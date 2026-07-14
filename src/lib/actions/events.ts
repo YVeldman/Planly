@@ -59,6 +59,47 @@ export async function createEventAction(
   revalidatePath("/dashboard/calendar");
 }
 
+export async function updateEventAction(
+  id: string,
+  _prevState: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  const user = await requireUser();
+
+  const parsed = eventSchema.safeParse({
+    title: formData.get("title"),
+    category: formData.get("category"),
+    date: formData.get("date"),
+    startTime: formData.get("startTime"),
+    endTime: formData.get("endTime") || undefined,
+    assigneeId: formData.get("assigneeId") || undefined,
+    location: formData.get("location") || undefined,
+    notes: formData.get("notes") || undefined,
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Ongeldige invoer." };
+  }
+
+  const { title, category, date, startTime, endTime, assigneeId, location, notes } = parsed.data;
+
+  await prisma.event.updateMany({
+    where: { id, familyId: user.familyId },
+    data: {
+      title,
+      category,
+      startTime: zonedDateTime(date, startTime),
+      endTime: endTime ? zonedDateTime(date, endTime) : null,
+      location: location || null,
+      notes: notes || null,
+      assigneeId: assigneeId || null,
+    },
+  });
+
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/calendar");
+}
+
 export async function deleteEventAction(id: string) {
   const user = await requireUser();
   await prisma.event.deleteMany({ where: { id, familyId: user.familyId } });

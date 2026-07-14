@@ -74,7 +74,7 @@ export default async function TasksPage({
           </p>
         )}
         {openTasks.map((task) => (
-          <TaskRow key={task.id} task={task} />
+          <TaskRow key={task.id} task={task} members={members} />
         ))}
       </div>
 
@@ -85,7 +85,7 @@ export default async function TasksPage({
           </h2>
           <div className="space-y-2">
             {doneTasks.map((task) => (
-              <TaskRow key={task.id} task={task} />
+              <TaskRow key={task.id} task={task} members={members} />
             ))}
           </div>
         </div>

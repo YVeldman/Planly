@@ -57,6 +57,40 @@ export async function createTaskAction(
   revalidatePath("/dashboard/tasks");
 }
 
+export async function updateTaskAction(
+  id: string,
+  _prevState: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  const user = await requireUser();
+
+  const parsed = taskSchema.safeParse({
+    title: formData.get("title"),
+    category: formData.get("category"),
+    dueDate: formData.get("dueDate") || undefined,
+    assigneeId: formData.get("assigneeId") || undefined,
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Ongeldige invoer." };
+  }
+
+  const { title, category, dueDate, assigneeId } = parsed.data;
+
+  await prisma.task.updateMany({
+    where: { id, familyId: user.familyId },
+    data: {
+      title,
+      category,
+      dueDate: dueDate ? zonedMidnight(dueDate) : null,
+      assigneeId: assigneeId || null,
+    },
+  });
+
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/tasks");
+}
+
 export async function toggleTaskAction(id: string, done: boolean) {
   const user = await requireUser();
   await prisma.task.updateMany({

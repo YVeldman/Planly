@@ -77,3 +77,27 @@ export function addDaysToDateString(dateStr: string, days: number): string {
   const [year, month, day] = dateStr.split("-").map(Number);
   return new Date(Date.UTC(year, month - 1, day + days)).toISOString().slice(0, 10);
 }
+
+const dateInputFormatter = new Intl.DateTimeFormat("en-CA", {
+  timeZone: APP_TIMEZONE,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+const timeInputFormatter = new Intl.DateTimeFormat("en-GB", {
+  timeZone: APP_TIMEZONE,
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+});
+
+/** Formats a Date as "YYYY-MM-DD" in APP_TIMEZONE, for use as an <input type="date"> value. */
+export function toZonedDateInputValue(date: Date): string {
+  return dateInputFormatter.format(date);
+}
+
+/** Formats a Date as "HH:mm" in APP_TIMEZONE, for use as an <input type="time"> value. */
+export function toZonedTimeInputValue(date: Date): string {
+  return timeInputFormatter.format(date);
+}

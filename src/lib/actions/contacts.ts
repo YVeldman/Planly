@@ -49,6 +49,41 @@ export async function createContactAction(
   revalidatePath("/dashboard/contacts");
 }
 
+export async function updateContactAction(
+  id: string,
+  _prevState: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  const user = await requireUser();
+
+  const parsed = contactSchema.safeParse({
+    name: formData.get("name"),
+    role: formData.get("role") || undefined,
+    phone: formData.get("phone") || undefined,
+    email: formData.get("email") || undefined,
+    notes: formData.get("notes") || undefined,
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Ongeldige invoer." };
+  }
+
+  const { name, role, phone, email, notes } = parsed.data;
+
+  await prisma.contact.updateMany({
+    where: { id, familyId: user.familyId },
+    data: {
+      name,
+      role: role || null,
+      phone: phone || null,
+      email: email || null,
+      notes: notes || null,
+    },
+  });
+
+  revalidatePath("/dashboard/contacts");
+}
+
 export async function deleteContactAction(id: string) {
   const user = await requireUser();
   await prisma.contact.deleteMany({ where: { id, familyId: user.familyId } });

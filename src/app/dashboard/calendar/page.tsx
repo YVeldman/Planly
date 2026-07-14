@@ -100,7 +100,7 @@ export default async function CalendarPage({
               </div>
               <div className="space-y-1.5">
                 {dayEvents.map((event) => (
-                  <CalendarEventCard key={event.id} event={event} />
+                  <CalendarEventCard key={event.id} event={event} members={members} />
                 ))}
                 {dayEvents.length === 0 && (
                   <p className="py-3 text-center text-[11px] text-ink-400">Geen afspraken</p>
