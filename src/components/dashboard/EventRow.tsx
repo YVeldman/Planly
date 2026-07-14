@@ -10,15 +10,18 @@ type Event = {
   title: string;
   category: string;
   startTime: Date;
+  endTime: Date | null;
   assignee: { name: string; color: string } | null;
 };
+
+const timeFormatter = new Intl.DateTimeFormat("nl-NL", { hour: "2-digit", minute: "2-digit" });
 
 export function EventRow({ event }: { event: Event }) {
   const [isPending, startTransition] = useTransition();
   const category = getCategory(event.category);
-  const time = new Intl.DateTimeFormat("nl-NL", { hour: "2-digit", minute: "2-digit" }).format(
-    event.startTime
-  );
+  const time = event.endTime
+    ? `${timeFormatter.format(event.startTime)} – ${timeFormatter.format(event.endTime)}`
+    : timeFormatter.format(event.startTime);
 
   return (
     <div className="flex items-center gap-3 rounded-xl bg-white px-4 py-3 shadow-sm">
