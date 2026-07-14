@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, CalendarDays, CheckCircle2, UtensilsCrossed, Contact, Settings } from "lucide-react";
+import { Home, CalendarDays, CheckCircle2, UtensilsCrossed, Gift, Contact, Settings } from "lucide-react";
 
 const items = [
   { href: "/dashboard", label: "Home", icon: Home },
   { href: "/dashboard/calendar", label: "Agenda", icon: CalendarDays },
   { href: "/dashboard/meals", label: "Maaltijden", icon: UtensilsCrossed },
   { href: "/dashboard/tasks", label: "Taken", icon: CheckCircle2 },
+  { href: "/dashboard/rewards", label: "Beloningen", icon: Gift },
   { href: "/dashboard/contacts", label: "Contacten", icon: Contact },
   { href: "/dashboard/settings", label: "Instellingen", icon: Settings },
 ];
@@ -43,14 +44,14 @@ export function DashboardNavMobile() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-t border-sage-200 bg-white/95 py-2 backdrop-blur md:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center gap-1 overflow-x-auto border-t border-sage-200 bg-white/95 px-2 py-2 backdrop-blur md:hidden">
       {items.map((item) => {
         const active = pathname === item.href;
         return (
           <Link
             key={item.href}
             href={item.href}
-            className={`flex flex-col items-center gap-1 rounded-lg px-3 py-1.5 text-[11px] font-medium ${
+            className={`flex shrink-0 flex-col items-center gap-1 rounded-lg px-3 py-1.5 text-[11px] font-medium ${
               active ? "text-sage-600" : "text-ink-500"
             }`}
           >

@@ -8,9 +8,10 @@ import { requireUser } from "@/lib/session";
 
 const memberSchema = z.object({
   name: z.string().trim().min(2, "Vul een naam in."),
-  email: z.string().trim().toLowerCase().email("Vul een geldig e-mailadres in."),
-  password: z.string().min(8, "Wachtwoord moet minimaal 8 tekens zijn."),
+  email: z.string().trim().toLowerCase().optional(),
+  password: z.string().optional(),
   color: z.string().min(1),
+  isChild: z.string().optional(),
 });
 
 export type ActionState = { error?: string } | undefined;
@@ -23,9 +24,10 @@ export async function addFamilyMemberAction(
 
   const parsed = memberSchema.safeParse({
     name: formData.get("name"),
-    email: formData.get("email"),
-    password: formData.get("password"),
+    email: formData.get("email") || undefined,
+    password: formData.get("password") || undefined,
     color: formData.get("color"),
+    isChild: formData.get("isChild") || undefined,
   });
 
   if (!parsed.success) {
@@ -33,24 +35,46 @@ export async function addFamilyMemberAction(
   }
 
   const { name, email, password, color } = parsed.data;
+  const isChild = parsed.data.isChild === "on";
 
-  const existing = await prisma.user.findUnique({ where: { email } });
-  if (existing) {
-    return { error: "Er bestaat al een account met dit e-mailadres." };
+  if (isChild) {
+    // Children get a lightweight profile only: no login, no email needed.
+    // Parents manage their tasks and reward points on their behalf.
+    await prisma.user.create({
+      data: {
+        name,
+        color,
+        role: "member",
+        isChild: true,
+        familyId: user.familyId,
+      },
+    });
+  } else {
+    if (!email || !z.string().email().safeParse(email).success) {
+      return { error: "Vul een geldig e-mailadres in." };
+    }
+    if (!password || password.length < 8) {
+      return { error: "Wachtwoord moet minimaal 8 tekens zijn." };
+    }
+
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      return { error: "Er bestaat al een account met dit e-mailadres." };
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    await prisma.user.create({
+      data: {
+        name,
+        email,
+        passwordHash,
+        color,
+        role: "member",
+        familyId: user.familyId,
+      },
+    });
   }
-
-  const passwordHash = await bcrypt.hash(password, 10);
-
-  await prisma.user.create({
-    data: {
-      name,
-      email,
-      passwordHash,
-      color,
-      role: "member",
-      familyId: user.familyId,
-    },
-  });
 
   revalidatePath("/dashboard/settings");
   revalidatePath("/dashboard");

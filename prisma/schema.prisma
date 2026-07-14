@@ -11,12 +11,13 @@ datasource db {
 }
 
 model Family {
-  id         String   @id @default(cuid())
-  name       String
-  inviteCode String   @unique @default(cuid())
-  icsToken   String   @unique @default(cuid())
-  plan       String   @default("free") // free | premium
-  createdAt  DateTime @default(now())
+  id             String   @id @default(cuid())
+  name           String
+  inviteCode     String   @unique @default(cuid())
+  icsToken       String   @unique @default(cuid())
+  plan           String   @default("free") // free | premium
+  rewardsEnabled Boolean  @default(false)
+  createdAt      DateTime @default(now())
 
   members       User[]
   events        Event[]
@@ -24,16 +25,25 @@ model Family {
   contacts      Contact[]
   externalFeeds ExternalCalendarFeed[]
   meals         Meal[]
+  rewardItems   RewardItem[]
 }
 
 model User {
   id           String   @id @default(cuid())
   name         String
-  email        String   @unique
-  passwordHash String
+  email        String?  @unique
+  passwordHash String?
   color        String   @default("#7C9473")
   role         String   @default("member") // owner | member
+  isChild      Boolean  @default(false)
   createdAt    DateTime @default(now())
+
+  // Recurring allowance: parents can grant a child a fixed number of
+  // points per week. Accrual is computed lazily (see lib/allowance.ts)
+  // rather than via a scheduled job.
+  allowancePointsPerWeek Int?
+  allowanceStartDate     DateTime?
+  allowanceLastAccruedAt DateTime?
 
   familyId String
   family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
@@ -42,6 +52,7 @@ model User {
   tasks  Task[]  @relation("TaskAssignee")
 
   pushSubscriptions PushSubscription[]
+  pointTransactions PointTransaction[]
 }
 
 model PushSubscription {
@@ -132,4 +143,26 @@ model Meal {
 
   familyId String
   family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+}
+
+model RewardItem {
+  id        String   @id @default(cuid())
+  name      String
+  pointCost Int
+  emoji     String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  familyId String
+  family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+}
+
+model PointTransaction {
+  id        String   @id @default(cuid())
+  amount    Int // positive = earned/awarded, negative = spent
+  reason    String
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

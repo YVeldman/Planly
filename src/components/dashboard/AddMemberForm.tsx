@@ -8,12 +8,14 @@ import { memberColors } from "@/lib/categories";
 export function AddMemberForm() {
   const [open, setOpen] = useState(false);
   const [color, setColor] = useState(memberColors[0]);
+  const [isChild, setIsChild] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const [state, formAction, pending] = useActionState(async (prevState: unknown, formData: FormData) => {
     const result = await addFamilyMemberAction(prevState as never, formData);
     if (!result?.error) {
       formRef.current?.reset();
       setColor(memberColors[0]);
+      setIsChild(false);
       setOpen(false);
     }
     return result;
@@ -47,21 +49,35 @@ export function AddMemberForm() {
         autoFocus
         className="w-full rounded-lg border border-sage-200 px-3 py-2 text-sm outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200"
       />
-      <input
-        name="email"
-        type="email"
-        placeholder="E-mailadres"
-        required
-        className="w-full rounded-lg border border-sage-200 px-3 py-2 text-sm outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200"
-      />
-      <input
-        name="password"
-        type="password"
-        placeholder="Tijdelijk wachtwoord (min. 8 tekens)"
-        required
-        minLength={8}
-        className="w-full rounded-lg border border-sage-200 px-3 py-2 text-sm outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200"
-      />
+      <label className="flex items-center gap-2 text-sm text-ink-700">
+        <input
+          type="checkbox"
+          name="isChild"
+          checked={isChild}
+          onChange={(e) => setIsChild(e.target.checked)}
+          className="h-4 w-4 rounded border-sage-300"
+        />
+        Dit is een kind (geen e-mailadres of wachtwoord nodig)
+      </label>
+      {!isChild && (
+        <>
+          <input
+            name="email"
+            type="email"
+            placeholder="E-mailadres"
+            required={!isChild}
+            className="w-full rounded-lg border border-sage-200 px-3 py-2 text-sm outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200"
+          />
+          <input
+            name="password"
+            type="password"
+            placeholder="Tijdelijk wachtwoord (min. 8 tekens)"
+            required={!isChild}
+            minLength={8}
+            className="w-full rounded-lg border border-sage-200 px-3 py-2 text-sm outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200"
+          />
+        </>
+      )}
       <div>
         <p className="mb-1.5 text-xs font-medium text-ink-700">Kleur</p>
         <input type="hidden" name="color" value={color} />
