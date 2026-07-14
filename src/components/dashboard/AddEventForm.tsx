@@ -4,6 +4,7 @@ import { useActionState, useRef, useState } from "react";
 import { Plus, X } from "lucide-react";
 import { createEventAction } from "@/lib/actions/events";
 import { categoryOptions } from "@/lib/categories";
+import { LocationInput } from "@/components/dashboard/LocationInput";
 
 type Member = { id: string; name: string };
 
@@ -99,11 +100,7 @@ export function AddEventForm({
           </option>
         ))}
       </select>
-      <input
-        name="location"
-        placeholder="Locatie (bijv. Tandartspraktijk, Hoofdstraat 12)"
-        className="w-full rounded-lg border border-sage-200 px-3 py-2 text-sm outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200"
-      />
+      <LocationInput />
       <button
         type="submit"
         disabled={pending}

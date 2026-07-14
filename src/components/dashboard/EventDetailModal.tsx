@@ -5,6 +5,7 @@ import { Pencil, MapPin, Users } from "lucide-react";
 import { updateEventAction } from "@/lib/actions/events";
 import { categoryOptions, getCategory } from "@/lib/categories";
 import { Modal } from "@/components/dashboard/Modal";
+import { LocationInput } from "@/components/dashboard/LocationInput";
 import { APP_TIMEZONE, toZonedDateInputValue, toZonedTimeInputValue } from "@/lib/timezone";
 
 type Member = { id: string; name: string };
@@ -180,12 +181,7 @@ function EventEditForm({
           </option>
         ))}
       </select>
-      <input
-        name="location"
-        defaultValue={event.location ?? ""}
-        placeholder="Locatie (bijv. Tandartspraktijk, Hoofdstraat 12)"
-        className="w-full rounded-lg border border-sage-200 px-3 py-2 text-sm outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200"
-      />
+      <LocationInput defaultValue={event.location ?? ""} />
       <textarea
         name="notes"
         defaultValue={event.notes ?? ""}
