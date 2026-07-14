@@ -20,7 +20,7 @@ export function WeekStrip({ reference, todayStr }: { reference: Date; todayStr: 
             }`}
           >
             <span className={`text-[10px] font-semibold uppercase tracking-wide ${isToday ? "text-white/80" : "text-ink-400"}`}>
-              {format(day, "EEE", { locale: nl })}
+              {format(day, "EEE", { locale: nl }).slice(0, 2)}
             </span>
             <span className="text-sm font-bold">{format(day, "d")}</span>
           </Link>

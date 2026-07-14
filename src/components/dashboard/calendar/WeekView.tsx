@@ -62,7 +62,7 @@ export async function WeekView({
                 className="mb-2 flex items-center justify-between hover:opacity-70"
               >
                 <p className="text-xs font-semibold uppercase tracking-wide text-ink-500">
-                  {format(day, "EEE", { locale: nl })}
+                  {format(day, "EEE", { locale: nl }).slice(0, 2)}
                 </p>
                 <p className={`text-sm font-bold ${isToday ? "text-sage-600" : "text-ink-900"}`}>
                   {format(day, "d")}

@@ -44,7 +44,7 @@ export function AddMealForm({ defaultDate }: { defaultDate: string }) {
         autoFocus
         className="w-full rounded-lg border border-sage-200 px-3 py-2 text-sm outline-none focus:border-sage-400 focus:ring-2 focus:ring-sage-200"
       />
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <input
           name="date"
           type="date"
