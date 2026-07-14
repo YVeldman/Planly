@@ -4,6 +4,7 @@ import { useTransition } from "react";
 import { MapPin, Trash2 } from "lucide-react";
 import { deleteEventAction } from "@/lib/actions/events";
 import { getCategory } from "@/lib/categories";
+import { APP_TIMEZONE } from "@/lib/timezone";
 
 type Event = {
   id: string;
@@ -15,7 +16,11 @@ type Event = {
   assignee: { name: string; color: string } | null;
 };
 
-const timeFormatter = new Intl.DateTimeFormat("nl-NL", { hour: "2-digit", minute: "2-digit" });
+const timeFormatter = new Intl.DateTimeFormat("nl-NL", {
+  hour: "2-digit",
+  minute: "2-digit",
+  timeZone: APP_TIMEZONE,
+});
 
 export function EventRow({ event }: { event: Event }) {
   const [isPending, startTransition] = useTransition();

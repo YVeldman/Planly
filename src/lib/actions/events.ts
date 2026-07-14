@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
+import { zonedDateTime } from "@/lib/timezone";
 
 const eventSchema = z.object({
   title: z.string().trim().min(1, "Geef de afspraak een titel."),
@@ -17,10 +18,6 @@ const eventSchema = z.object({
 });
 
 export type ActionState = { error?: string } | undefined;
-
-function toDateTime(date: string, time: string) {
-  return new Date(`${date}T${time}:00`);
-}
 
 export async function createEventAction(
   _prevState: ActionState,
@@ -49,8 +46,8 @@ export async function createEventAction(
     data: {
       title,
       category,
-      startTime: toDateTime(date, startTime),
-      endTime: endTime ? toDateTime(date, endTime) : null,
+      startTime: zonedDateTime(date, startTime),
+      endTime: endTime ? zonedDateTime(date, endTime) : null,
       location: location || null,
       notes: notes || null,
       familyId: user.familyId,

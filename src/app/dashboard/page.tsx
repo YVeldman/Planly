@@ -5,21 +5,16 @@ import { EventRow } from "@/components/dashboard/EventRow";
 import { TaskRow } from "@/components/dashboard/TaskRow";
 import { AddEventForm } from "@/components/dashboard/AddEventForm";
 import { AddTaskForm } from "@/components/dashboard/AddTaskForm";
-
-function startOfDay(date: Date) {
-  const d = new Date(date);
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
-
-function endOfDay(date: Date) {
-  const d = new Date(date);
-  d.setHours(23, 59, 59, 999);
-  return d;
-}
+import {
+  APP_TIMEZONE,
+  addDaysToDateString,
+  currentHourInAppTimezone,
+  todayDateStringInAppTimezone,
+  zonedMidnight,
+} from "@/lib/timezone";
 
 function greeting() {
-  const hour = new Date().getHours();
+  const hour = currentHourInAppTimezone();
   if (hour < 12) return "Goedemorgen";
   if (hour < 18) return "Goedemiddag";
   return "Goedenavond";
@@ -27,13 +22,15 @@ function greeting() {
 
 export default async function DashboardPage() {
   const user = await requireUser();
-  const today = new Date();
+  const todayStr = todayDateStringInAppTimezone();
+  const dayStart = zonedMidnight(todayStr);
+  const dayEnd = zonedMidnight(addDaysToDateString(todayStr, 1));
 
   const [events, tasks, members] = await Promise.all([
     prisma.event.findMany({
       where: {
         familyId: user.familyId,
-        startTime: { gte: startOfDay(today), lte: endOfDay(today) },
+        startTime: { gte: dayStart, lt: dayEnd },
       },
       include: { assignee: true },
       orderBy: { startTime: "asc" },
@@ -55,7 +52,8 @@ export default async function DashboardPage() {
     weekday: "long",
     day: "numeric",
     month: "long",
-  }).format(today);
+    timeZone: APP_TIMEZONE,
+  }).format(dayStart);
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -84,7 +82,7 @@ export default async function DashboardPage() {
           ))}
         </div>
         <div className="mt-3">
-          <AddEventForm members={members} defaultDate={startOfDay(today).toISOString().slice(0, 10)} />
+          <AddEventForm members={members} defaultDate={todayStr} />
         </div>
       </section>
 

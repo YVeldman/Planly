@@ -5,6 +5,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 import { sendPushToUser } from "@/lib/push";
+import { zonedMidnight } from "@/lib/timezone";
 
 const taskSchema = z.object({
   title: z.string().trim().min(1, "Geef de taak een titel."),
@@ -38,7 +39,7 @@ export async function createTaskAction(
     data: {
       title,
       category,
-      dueDate: dueDate ? new Date(`${dueDate}T00:00:00`) : null,
+      dueDate: dueDate ? zonedMidnight(dueDate) : null,
       familyId: user.familyId,
       assigneeId: assigneeId || null,
     },
