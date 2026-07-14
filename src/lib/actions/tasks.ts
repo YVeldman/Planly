@@ -34,6 +34,7 @@ export async function createTaskAction(
   }
 
   const { title, category, dueDate, assigneeId } = parsed.data;
+  const notify = formData.get("notify") === "on";
 
   await prisma.task.create({
     data: {
@@ -45,7 +46,7 @@ export async function createTaskAction(
     },
   });
 
-  if (assigneeId && assigneeId !== user.id) {
+  if (assigneeId && assigneeId !== user.id && notify) {
     await sendPushToUser(assigneeId, {
       title: "Nieuwe taak toegewezen",
       body: `${user.name} heeft je een taak gegeven: ${title}`,

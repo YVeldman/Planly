@@ -9,11 +9,13 @@ type Member = { id: string; name: string };
 
 export function AddTaskForm({ members }: { members: Member[] }) {
   const [open, setOpen] = useState(false);
+  const [assigneeId, setAssigneeId] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
   const [state, formAction, pending] = useActionState(async (prevState: unknown, formData: FormData) => {
     const result = await createTaskAction(prevState as never, formData);
     if (!result?.error) {
       formRef.current?.reset();
+      setAssigneeId("");
       setOpen(false);
     }
     return result;
@@ -62,6 +64,7 @@ export function AddTaskForm({ members }: { members: Member[] }) {
         <select
           name="assigneeId"
           defaultValue=""
+          onChange={(e) => setAssigneeId(e.target.value)}
           className="w-full rounded-lg border border-sage-200 px-3 py-2 text-sm outline-none focus:border-sage-400"
         >
           <option value="">Niemand</option>
@@ -72,6 +75,17 @@ export function AddTaskForm({ members }: { members: Member[] }) {
           ))}
         </select>
       </div>
+      {assigneeId && (
+        <label className="flex items-center gap-2 text-sm text-ink-700">
+          <input
+            type="checkbox"
+            name="notify"
+            defaultChecked
+            className="h-4 w-4 rounded border-sage-300"
+          />
+          Stuur melding naar toegewezen persoon
+        </label>
+      )}
       <input
         name="dueDate"
         type="date"
