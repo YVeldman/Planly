@@ -1,11 +1,12 @@
 "use client";
 
 import { useActionState, useState, useTransition } from "react";
-import { UtensilsCrossed, Clock, Star, Trash2, Pencil, ExternalLink } from "lucide-react";
+import { Clock, Star, Trash2, Pencil, ExternalLink } from "lucide-react";
 import { deleteMealAction, updateMealAction } from "@/lib/actions/meals";
 import { Modal } from "@/components/dashboard/Modal";
 import { toZonedDateInputValue } from "@/lib/timezone";
 import { RecipeImportField } from "@/components/dashboard/RecipeImportField";
+import { MealThumbnail } from "@/components/dashboard/MealThumbnail";
 
 type Meal = {
   id: string;
@@ -44,9 +45,7 @@ export function MealCard({ meal }: { meal: Meal }) {
         }}
         className="flex cursor-pointer items-center gap-3 rounded-xl bg-white p-4 shadow-sm transition hover:shadow-md"
       >
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-peach-100 text-[#c17a52]">
-          <UtensilsCrossed className="h-5 w-5" />
-        </div>
+        <MealThumbnail src={meal.imageUrl} alt={meal.title} className="h-11 w-11 shrink-0 rounded-lg" />
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold text-ink-900">{meal.title}</p>
           <div className="mt-0.5 flex items-center gap-3 text-xs text-ink-500">
@@ -82,11 +81,11 @@ export function MealCard({ meal }: { meal: Meal }) {
         ) : (
           <div className="space-y-3">
             {meal.imageUrl && (
-              // eslint-disable-next-line @next/next/no-img-element -- arbitrary external recipe-site images, can't be predeclared in next/image's remotePatterns
-              <img
+              <MealThumbnail
                 src={meal.imageUrl}
                 alt={meal.title}
-                className="h-40 w-full rounded-lg object-cover"
+                className="h-40 w-full rounded-lg"
+                iconClassName="h-8 w-8"
               />
             )}
             <div className="flex items-center gap-2">

@@ -3,6 +3,7 @@ import { CheckCircle2, Clock, Star, ArrowRight } from "lucide-react";
 import { requireUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { TodayTimeline } from "@/components/dashboard/TodayTimeline";
+import { MealThumbnail } from "@/components/dashboard/MealThumbnail";
 import {
   APP_TIMEZONE,
   addDaysToDateString,
@@ -145,19 +146,30 @@ export default async function DashboardPage() {
 
         <div className="space-y-4">
           <div className="rounded-2xl bg-sage-700 p-5 text-white shadow-sm">
-            <p className="text-xs font-semibold uppercase tracking-wide text-white/70">Vanavond op tafel</p>
-            {todaysMeal ? (
-              <>
-                <h2 className="mt-1 font-serif text-xl font-bold">{todaysMeal.title}</h2>
-                <p className="mt-1 text-sm text-white/80">
-                  {[todaysMeal.notes, todaysMeal.prepTime ? `${todaysMeal.prepTime} min` : null]
-                    .filter(Boolean)
-                    .join(" · ")}
-                </p>
-              </>
-            ) : (
-              <p className="mt-1 text-sm text-white/80">Nog geen maaltijd gepland voor vandaag.</p>
-            )}
+            <div className="flex items-start gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-semibold uppercase tracking-wide text-white/70">Vanavond op tafel</p>
+                {todaysMeal ? (
+                  <>
+                    <h2 className="mt-1 truncate font-serif text-xl font-bold">{todaysMeal.title}</h2>
+                    <p className="mt-1 text-sm text-white/80">
+                      {[todaysMeal.notes, todaysMeal.prepTime ? `${todaysMeal.prepTime} min` : null]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </p>
+                  </>
+                ) : (
+                  <p className="mt-1 text-sm text-white/80">Nog geen maaltijd gepland voor vandaag.</p>
+                )}
+              </div>
+              {todaysMeal?.imageUrl && (
+                <MealThumbnail
+                  src={todaysMeal.imageUrl}
+                  alt={todaysMeal.title}
+                  className="h-16 w-16 shrink-0 rounded-xl"
+                />
+              )}
+            </div>
             <Link
               href="/dashboard/groceries"
               className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-white hover:underline"
