@@ -5,45 +5,63 @@ import {
   CheckCircle2,
   ShoppingCart,
   UtensilsCrossed,
-  Heart,
-  Sparkles,
+  RefreshCw,
+  Star,
   ShieldCheck,
   Smartphone,
+  Heart,
+  Play,
+  ArrowRight,
+  Check,
 } from "lucide-react";
 import { LandingHeader } from "@/components/landing/Header";
 import { LandingFooter } from "@/components/landing/Footer";
-import { PhonePreview } from "@/components/landing/PhonePreview";
+import { DashboardPreview } from "@/components/landing/DashboardPreview";
+import { WeekPreview } from "@/components/landing/WeekPreview";
+import { TasksRewardsPreview } from "@/components/landing/TasksRewardsPreview";
 
 const features = [
   {
-    icon: Users,
-    title: "Voor het hele gezin",
-    description: "Voeg iedereen toe: ouders, kinderen en zelfs oma en opa. Elk gezinslid krijgt een eigen kleur en profiel.",
-  },
-  {
     icon: CalendarDays,
-    title: "Overzicht van de week",
-    description: "Eén gedeelde agenda voor school, werk, sport en afspraken. Zie in één oogopslag wie wat doet en wanneer.",
+    iconBg: "bg-sage-100",
+    iconFg: "text-sage-600",
+    title: "Gedeelde gezinsagenda",
+    description: "School, sport, werk en afspraken overzichtelijk bij elkaar. Iedereen ziet direct wat er speelt.",
   },
   {
     icon: CheckCircle2,
-    title: "Taken en klusjes",
-    description: "Verdeel huishoudelijke taken en klusjes, wijs ze toe aan gezinsleden en vink ze samen af.",
-  },
-  {
-    icon: ShoppingCart,
-    title: "Boodschappen gemaakt makkelijk",
-    description: "Eén gedeelde boodschappenlijst die altijd up-to-date is, waar je ook bent.",
+    iconBg: "bg-peach-100",
+    iconFg: "text-[#c17a52]",
+    title: "Taken die wél gebeuren",
+    description: "Verdeel taken, wijs ze toe en maak voortgang zichtbaar zonder steeds te hoeven herinneren.",
   },
   {
     icon: UtensilsCrossed,
-    title: "Maaltijdplanning",
-    description: "Plan het weekmenu samen en voorkom het dagelijkse 'wat eten we vanavond?'.",
+    iconBg: "bg-[#f3e4ae]",
+    iconFg: "text-[#8a7255]",
+    title: "Weekmenu zonder keuzestress",
+    description: "Plan maaltijden samen, bewaar favorieten en houd in één blik in de gaten wat er op tafel komt.",
   },
   {
-    icon: Heart,
-    title: "Meer tijd samen",
-    description: "Minder plannen, meer leven. Planly houdt overzicht zodat jullie meer tijd voor elkaar hebben.",
+    icon: ShoppingCart,
+    iconBg: "bg-sage-100",
+    iconFg: "text-sage-600",
+    title: "Gedeelde boodschappenlijst",
+    description: "Eén lijst die het hele gezin samen bijhoudt en aanvult, ook onderweg naar de winkel.",
+  },
+  {
+    icon: Star,
+    iconBg: "bg-peach-100",
+    iconFg: "text-[#c17a52]",
+    title: "Motiverende beloningen",
+    description: "Kinderen sparen punten met taken en kiezen samen een passende beloning uit de gezinswinkel.",
+  },
+  {
+    icon: RefreshCw,
+    iconBg: "bg-[#f3e4ae]",
+    iconFg: "text-[#8a7255]",
+    title: "Koppel je eigen agenda",
+    description: "Verbind Apple of Google Agenda met Planly, zodat al jullie afspraken automatisch op één plek staan.",
   },
 ];
 
@@ -95,30 +113,30 @@ export default function Home() {
           <div className="pointer-events-none absolute -top-24 right-0 h-96 w-96 rounded-full bg-peach-100/50 blur-3xl" />
           <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 md:grid-cols-2 md:py-24">
             <div>
-              <span className="inline-flex items-center gap-2 rounded-full bg-sage-100 px-4 py-1.5 text-xs font-semibold text-sage-700">
-                <Sparkles className="h-3.5 w-3.5" />
-                De gezinsplanner voor rustige weken
+              <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-ink-500">
+                <span className="h-px w-6 bg-ink-400" /> Rust voor het hele gezin
               </span>
               <h1 className="mt-5 font-serif text-4xl font-bold leading-tight text-ink-900 sm:text-5xl">
-                Plan life together.
+                Meer tijd samen.
+                <br />
+                <em className="italic text-[#c17a52]">Minder geregel.</em>
               </h1>
               <p className="mt-5 max-w-lg text-lg leading-relaxed text-ink-700">
-                Planly is de alles-in-één gezinsplanner die agenda&apos;s, taken,
-                boodschappen en maaltijden samenbrengt in één rustige, overzichtelijke
-                app — voor jou en de rest van je gezin.
+                Planly brengt jullie agenda, taken, maaltijden en boodschappen samen
+                in één rustige gezinsapp. Zo weet iedereen wat er vandaag telt.
               </p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
                 <Link
                   href="/signup"
-                  className="rounded-full bg-sage-600 px-7 py-3.5 text-center text-sm font-semibold text-white shadow-md transition hover:bg-sage-700"
+                  className="flex items-center justify-center gap-2 rounded-full bg-sage-600 px-7 py-3.5 text-center text-sm font-semibold text-white shadow-md transition hover:bg-sage-700"
                 >
-                  Gratis starten
+                  Probeer Planly direct <ArrowRight className="h-4 w-4" />
                 </Link>
                 <a
                   href="#how-it-works"
-                  className="rounded-full border border-sage-300 px-7 py-3.5 text-center text-sm font-semibold text-ink-900 transition hover:bg-sage-50"
+                  className="flex items-center justify-center gap-2 text-sm font-semibold text-ink-900 transition hover:text-sage-600"
                 >
-                  Hoe het werkt
+                  <Play className="h-4 w-4" /> Bekijk hoe Planly werkt
                 </a>
               </div>
               <div className="mt-10 flex flex-wrap gap-x-8 gap-y-3 text-sm text-ink-500">
@@ -133,7 +151,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <PhonePreview />
+            <DashboardPreview />
           </div>
         </section>
 
@@ -141,12 +159,16 @@ export default function Home() {
         <section id="features" className="bg-cream-50 py-20">
           <div className="mx-auto max-w-6xl px-6">
             <div className="mx-auto max-w-2xl text-center">
-              <h2 className="font-serif text-3xl font-bold text-ink-900 sm:text-4xl">
-                Alles wat jullie gezin nodig heeft
+              <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-ink-500">
+                <span className="h-px w-6 bg-ink-400" /> Alles op één plek
+              </span>
+              <h2 className="mt-3 font-serif text-3xl font-bold text-ink-900 sm:text-4xl">
+                Van ochtendspits tot bedtijd, <br />
+                <em className="italic text-[#c17a52]">Planly denkt mee.</em>
               </h2>
               <p className="mt-4 text-ink-700">
-                Geen losse appjes en briefjes op de koelkast meer. Planly brengt alles
-                samen op één rustige plek.
+                Geen losse lijstjes, agenda-apps of appgroepen meer. Planly maakt het
+                gezinsleven helder zonder het vol te stoppen.
               </p>
             </div>
             <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -155,15 +177,88 @@ export default function Home() {
                   key={feature.title}
                   className="rounded-2xl border border-sage-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
                 >
-                  <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-sage-100 text-sage-600">
+                  <div className={`mb-4 flex h-11 w-11 items-center justify-center rounded-xl ${feature.iconBg} ${feature.iconFg}`}>
                     <feature.icon className="h-5.5 w-5.5" />
                   </div>
                   <h3 className="font-semibold text-ink-900">{feature.title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-ink-500">
                     {feature.description}
                   </p>
+                  <a href="#how-it-works" className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-ink-900 hover:text-sage-600">
+                    Ontdek meer <ArrowRight className="h-3.5 w-3.5" />
+                  </a>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* 01 - Overzicht */}
+        <section className="py-20">
+          <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 lg:grid-cols-2">
+            <div>
+              <span className="text-xs font-semibold uppercase tracking-wide text-[#c17a52]">01 · Overzicht</span>
+              <h2 className="mt-3 font-serif text-3xl font-bold text-ink-900 sm:text-4xl">
+                De week in één oogopslag.
+              </h2>
+              <p className="mt-4 text-ink-700">
+                Zie precies waar iedereen moet zijn, wat er nog moet gebeuren en wat
+                jullie eten. Persoonlijke kleuren maken de planning direct herkenbaar.
+              </p>
+              <ul className="mt-6 space-y-3">
+                {[
+                  "Koppel bestaande agenda's (Apple & Google)",
+                  "Bekijk je week in dag-, week- of maandweergave",
+                  "Wijs afspraken toe aan wie het aangaat",
+                ].map((item) => (
+                  <li key={item} className="flex items-center gap-2 text-sm text-ink-700">
+                    <Check className="h-4 w-4 shrink-0 text-sage-600" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/signup"
+                className="mt-6 inline-flex items-center gap-1 border-b border-ink-900 pb-0.5 text-sm font-semibold text-ink-900 hover:border-sage-600 hover:text-sage-600"
+              >
+                Maak jullie eerste week <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+            <WeekPreview />
+          </div>
+        </section>
+
+        {/* 02 - Samen doen */}
+        <section className="bg-cream-50 py-20">
+          <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 lg:grid-cols-2">
+            <TasksRewardsPreview />
+            <div>
+              <span className="text-xs font-semibold uppercase tracking-wide text-[#c17a52]">02 · Samen doen</span>
+              <h2 className="mt-3 font-serif text-3xl font-bold text-ink-900 sm:text-4xl">
+                Iedereen draagt iets bij.
+              </h2>
+              <p className="mt-4 text-ink-700">
+                Maak taken aan, verdeel ze eerlijk en houd het positief. Kinderen zien
+                zelf wat ze kunnen doen en sparen voor kleine beloningen.
+              </p>
+              <ul className="mt-6 space-y-3">
+                {[
+                  "Wijs taken toe aan het hele gezin, ook kinderen",
+                  "Zachte herinneringen, zonder gedoe",
+                  "Een beloningswinkel die jullie zelf bepalen",
+                ].map((item) => (
+                  <li key={item} className="flex items-center gap-2 text-sm text-ink-700">
+                    <Check className="h-4 w-4 shrink-0 text-sage-600" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <a
+                href="#features"
+                className="mt-6 inline-flex items-center gap-1 border-b border-ink-900 pb-0.5 text-sm font-semibold text-ink-900 hover:border-sage-600 hover:text-sage-600"
+              >
+                Ontdek samen plannen <ArrowRight className="h-3.5 w-3.5" />
+              </a>
             </div>
           </div>
         </section>
