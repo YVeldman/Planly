@@ -1,13 +1,8 @@
 import Link from "next/link";
+import { CheckCircle2, Clock, Star, ArrowRight } from "lucide-react";
 import { requireUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
-import { EventRow } from "@/components/dashboard/EventRow";
-import { TaskRow } from "@/components/dashboard/TaskRow";
-import { MealCard } from "@/components/dashboard/MealCard";
-import { AddEventForm } from "@/components/dashboard/AddEventForm";
-import { AddTaskForm } from "@/components/dashboard/AddTaskForm";
-import { AddMealForm } from "@/components/dashboard/AddMealForm";
-import { WeekStrip } from "@/components/dashboard/WeekStrip";
+import { TodayTimeline } from "@/components/dashboard/TodayTimeline";
 import {
   APP_TIMEZONE,
   addDaysToDateString,
@@ -23,13 +18,19 @@ function greeting() {
   return "Goedenavond";
 }
 
+const timeFormatter = new Intl.DateTimeFormat("nl-NL", {
+  hour: "2-digit",
+  minute: "2-digit",
+  timeZone: APP_TIMEZONE,
+});
+
 export default async function DashboardPage() {
   const user = await requireUser();
   const todayStr = todayDateStringInAppTimezone();
   const dayStart = zonedMidnight(todayStr);
   const dayEnd = zonedMidnight(addDaysToDateString(todayStr, 1));
 
-  const [events, tasks, meals, members] = await Promise.all([
+  const [events, tasks, meals, members, family] = await Promise.all([
     prisma.event.findMany({
       where: {
         familyId: user.familyId,
@@ -39,10 +40,8 @@ export default async function DashboardPage() {
       orderBy: { startTime: "asc" },
     }),
     prisma.task.findMany({
-      where: { familyId: user.familyId, done: false },
-      include: { assignee: true },
+      where: { familyId: user.familyId },
       orderBy: { createdAt: "desc" },
-      take: 6,
     }),
     prisma.meal.findMany({
       where: { familyId: user.familyId, date: { gte: dayStart, lt: dayEnd } },
@@ -53,93 +52,143 @@ export default async function DashboardPage() {
       select: { id: true, name: true },
       orderBy: { createdAt: "asc" },
     }),
+    prisma.family.findUnique({ where: { id: user.familyId } }),
   ]);
 
-  const dateLabel = new Intl.DateTimeFormat("nl-NL", {
+  const dateKicker = new Intl.DateTimeFormat("nl-NL", {
     weekday: "long",
     day: "numeric",
     month: "long",
     timeZone: APP_TIMEZONE,
   }).format(dayStart);
 
+  const doneTasks = tasks.filter((t) => t.done).length;
+  const totalTasks = tasks.length;
+  const taskProgress = totalTasks === 0 ? 0 : Math.round((doneTasks / totalTasks) * 100);
+
+  const now = new Date();
+  const nextEvent = events.find((e) => e.startTime >= now) ?? null;
+
+  const todaysMeal = meals[0] ?? null;
+
+  let totalPoints: number | null = null;
+  if (family?.rewardsEnabled) {
+    const result = await prisma.pointTransaction.aggregate({
+      where: { user: { familyId: user.familyId, isChild: true } },
+      _sum: { amount: true },
+    });
+    totalPoints = result._sum.amount ?? 0;
+  }
+
   return (
-    <div className="mx-auto max-w-3xl">
-      <div className="mb-6">
-        <h1 className="font-serif text-2xl font-bold text-ink-900">
-          {greeting()}, {user.name?.split(" ")[0]}
-        </h1>
-        <p className="mt-1 text-sm capitalize text-ink-500">{dateLabel}</p>
+    <div className="mx-auto max-w-5xl">
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wide text-[#c17a52]">{dateKicker}</p>
+          <h1 className="font-serif text-3xl font-bold text-ink-900">
+            {greeting()}, {user.name?.split(" ")[0]}.
+          </h1>
+          <p className="mt-1 text-sm text-ink-500">Dit staat er vandaag voor jullie klaar.</p>
+        </div>
+        <Link
+          href="/dashboard/tasks"
+          className="shrink-0 rounded-full bg-sage-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-sage-700"
+        >
+          + Nieuwe taak
+        </Link>
       </div>
 
-      <WeekStrip reference={dayStart} todayStr={todayStr} />
-
-      <section className="mb-8">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-500">Vandaag</h2>
-          <Link href="/dashboard/calendar" className="text-xs font-medium text-sage-600 hover:underline">
-            Volledige agenda
-          </Link>
-        </div>
-        <div className="space-y-2">
-          {events.length === 0 && (
-            <p className="rounded-xl bg-white px-4 py-6 text-center text-sm text-ink-500 shadow-sm">
-              Nog geen afspraken vandaag. Geniet van de rust 🌿
+      <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div className="flex items-center gap-3 rounded-xl bg-white p-4 shadow-sm">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-sage-100 text-sage-600">
+            <CheckCircle2 className="h-5 w-5" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-500">Taken</p>
+            <p className="truncate text-sm font-semibold text-ink-900">
+              {totalTasks === 0 ? "Nog geen taken" : `${doneTasks} van ${totalTasks} klaar`}
             </p>
-          )}
-          {events.map((event) => (
-            <EventRow key={event.id} event={event} members={members} />
-          ))}
+          </div>
         </div>
-        <div className="mt-3">
-          <AddEventForm members={members} defaultDate={todayStr} />
-        </div>
-      </section>
 
-      <section className="mb-8">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-500">Eten vandaag</h2>
-          <Link href="/dashboard/meals" className="text-xs font-medium text-sage-600 hover:underline">
-            Alle maaltijden
-          </Link>
-        </div>
-        <div className="space-y-2">
-          {meals.length === 0 && (
-            <p className="rounded-xl bg-white px-4 py-6 text-center text-sm text-ink-500 shadow-sm">
-              Nog geen maaltijd gepland voor vandaag.
+        <div className="flex items-center gap-3 rounded-xl bg-white p-4 shadow-sm">
+          <div className="flex h-10 shrink-0 items-center justify-center rounded-lg bg-peach-100 px-2.5 text-xs font-bold text-[#a35b36]">
+            {nextEvent ? timeFormatter.format(nextEvent.startTime) : <Clock className="h-4 w-4" />}
+          </div>
+          <div className="min-w-0">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-500">Volgende</p>
+            <p className="truncate text-sm font-semibold text-ink-900">
+              {nextEvent
+                ? nextEvent.assignee
+                  ? `${nextEvent.title} van ${nextEvent.assignee.name}`
+                  : nextEvent.title
+                : "Niks meer vandaag"}
             </p>
-          )}
-          {meals.map((meal) => (
-            <MealCard key={meal.id} meal={meal} />
-          ))}
+          </div>
         </div>
-        <div className="mt-3">
-          <AddMealForm defaultDate={todayStr} />
-        </div>
-      </section>
 
-      <section>
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-500">
-            Taken <span className="text-ink-400">({tasks.length} openstaand)</span>
-          </h2>
-          <Link href="/dashboard/tasks" className="text-xs font-medium text-sage-600 hover:underline">
-            Bekijk alles
-          </Link>
+        {family?.rewardsEnabled && (
+          <div className="flex items-center gap-3 rounded-xl bg-white p-4 shadow-sm">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-cream-200 text-[#8a7255]">
+              <Star className="h-5 w-5 fill-current" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-500">Beloningen</p>
+              <p className="truncate text-sm font-semibold text-ink-900">{totalPoints} punten gespaard</p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.3fr_1fr]">
+        <TodayTimeline events={events} members={members} />
+
+        <div className="space-y-4">
+          <div className="rounded-2xl bg-sage-700 p-5 text-white shadow-sm">
+            <p className="text-xs font-semibold uppercase tracking-wide text-white/70">Vanavond op tafel</p>
+            {todaysMeal ? (
+              <>
+                <h2 className="mt-1 font-serif text-xl font-bold">{todaysMeal.title}</h2>
+                <p className="mt-1 text-sm text-white/80">
+                  {[todaysMeal.notes, todaysMeal.prepTime ? `${todaysMeal.prepTime} min` : null]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </p>
+              </>
+            ) : (
+              <p className="mt-1 text-sm text-white/80">Nog geen maaltijd gepland voor vandaag.</p>
+            )}
+            <Link
+              href="/dashboard/groceries"
+              className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-white hover:underline"
+            >
+              Bekijk boodschappen <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+
+          <div className="rounded-2xl bg-white p-5 shadow-sm">
+            <div className="mb-2 flex items-center justify-between">
+              <p className="text-xs font-semibold uppercase tracking-wide text-ink-500">Samen doen</p>
+              <span className="shrink-0 text-xs font-semibold text-ink-500">
+                {doneTasks}/{totalTasks}
+              </span>
+            </div>
+            <h2 className="font-serif text-lg font-bold text-ink-900">Taken</h2>
+            <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-sage-100">
+              <div
+                className="h-full rounded-full bg-sage-600 transition-all"
+                style={{ width: `${taskProgress}%` }}
+              />
+            </div>
+            <Link
+              href="/dashboard/tasks"
+              className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-sage-600 hover:underline"
+            >
+              Open alle taken <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
         </div>
-        <div className="space-y-2">
-          {tasks.length === 0 && (
-            <p className="rounded-xl bg-white px-4 py-6 text-center text-sm text-ink-500 shadow-sm">
-              Alle taken zijn afgerond. Goed bezig! 🎉
-            </p>
-          )}
-          {tasks.map((task) => (
-            <TaskRow key={task.id} task={task} members={members} />
-          ))}
-        </div>
-        <div className="mt-3">
-          <AddTaskForm members={members} />
-        </div>
-      </section>
+      </div>
     </div>
   );
 }

@@ -26,6 +26,7 @@ model Family {
   externalFeeds ExternalCalendarFeed[]
   meals         Meal[]
   rewardItems   RewardItem[]
+  groceryItems  GroceryItem[]
 }
 
 model User {
@@ -165,4 +166,15 @@ model PointTransaction {
 
   userId String
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model GroceryItem {
+  id        String   @id @default(cuid())
+  name      String
+  category  String?
+  done      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  familyId String
+  family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
 }

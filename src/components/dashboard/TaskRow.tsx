@@ -51,7 +51,7 @@ export function TaskRow({
             e.stopPropagation();
             startTransition(() => toggleTaskAction(task.id, !task.done));
           }}
-          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition ${
+          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition ${
             task.done ? "border-sage-500 bg-sage-500" : "border-sage-300 bg-white"
           }`}
           aria-label={task.done ? "Markeer als niet gedaan" : "Markeer als gedaan"}
