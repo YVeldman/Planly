@@ -46,3 +46,17 @@ export async function deleteGroceryItemAction(id: string) {
   revalidatePath("/dashboard/groceries");
   revalidatePath("/dashboard");
 }
+
+export async function addIngredientsToGroceriesAction(ingredients: string[]) {
+  const user = await requireUser();
+
+  const names = ingredients.map((i) => i.trim()).filter(Boolean);
+  if (names.length === 0) return;
+
+  await prisma.groceryItem.createMany({
+    data: names.map((name) => ({ name, familyId: user.familyId })),
+  });
+
+  revalidatePath("/dashboard/groceries");
+  revalidatePath("/dashboard");
+}

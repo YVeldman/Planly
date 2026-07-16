@@ -3,11 +3,14 @@
 import { useActionState, useRef, useState } from "react";
 import { Plus, X } from "lucide-react";
 import { createMealAction } from "@/lib/actions/meals";
+import { addIngredientsToGroceriesAction } from "@/lib/actions/groceries";
 import { RecipeImportField } from "@/components/dashboard/RecipeImportField";
+import { IngredientGroceryPicker, type IngredientGroceryPickerHandle } from "@/components/dashboard/IngredientGroceryPicker";
 
 export function AddMealForm({ defaultDate }: { defaultDate: string }) {
   const [open, setOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
+  const groceryPickerRef = useRef<IngredientGroceryPickerHandle>(null);
   const [title, setTitle] = useState("");
   const [prepTime, setPrepTime] = useState("");
   const [ingredients, setIngredients] = useState("");
@@ -15,9 +18,17 @@ export function AddMealForm({ defaultDate }: { defaultDate: string }) {
   const [imageUrl, setImageUrl] = useState("");
   const [sourceUrl, setSourceUrl] = useState("");
 
+  const ingredientLines = ingredients
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+
   const [state, formAction, pending] = useActionState(async (prevState: unknown, formData: FormData) => {
     const result = await createMealAction(prevState as never, formData);
     if (!result?.error) {
+      const selected = groceryPickerRef.current?.getSelected() ?? [];
+      if (selected.length > 0) await addIngredientsToGroceriesAction(selected);
+
       formRef.current?.reset();
       setTitle("");
       setPrepTime("");
@@ -100,6 +111,7 @@ export function AddMealForm({ defaultDate }: { defaultDate: string }) {
           className="w-full resize-none rounded-lg border border-sage-200 px-3 py-2 text-sm outline-none focus:border-sage-400"
         />
       </div>
+      <IngredientGroceryPicker ref={groceryPickerRef} ingredients={ingredientLines} />
       <div>
         <label className="mb-1 block text-xs font-medium text-ink-500">Bereidingswijze (één stap per regel)</label>
         <textarea

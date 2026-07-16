@@ -1,12 +1,14 @@
 "use client";
 
-import { useActionState, useState, useTransition } from "react";
+import { useActionState, useRef, useState, useTransition } from "react";
 import { Clock, Star, Trash2, Pencil, ExternalLink } from "lucide-react";
 import { deleteMealAction, updateMealAction } from "@/lib/actions/meals";
+import { addIngredientsToGroceriesAction } from "@/lib/actions/groceries";
 import { Modal } from "@/components/dashboard/Modal";
 import { toZonedDateInputValue } from "@/lib/timezone";
 import { RecipeImportField } from "@/components/dashboard/RecipeImportField";
 import { MealThumbnail } from "@/components/dashboard/MealThumbnail";
+import { IngredientGroceryPicker, type IngredientGroceryPickerHandle } from "@/components/dashboard/IngredientGroceryPicker";
 
 type Meal = {
   id: string;
@@ -165,10 +167,15 @@ function MealEditForm({
   onDone: () => void;
   onCancel: () => void;
 }) {
+  const groceryPickerRef = useRef<IngredientGroceryPickerHandle>(null);
   const updateWithId = updateMealAction.bind(null, meal.id);
   const [state, formAction, pending] = useActionState(async (prevState: unknown, formData: FormData) => {
     const result = await updateWithId(prevState as never, formData);
-    if (!result?.error) onDone();
+    if (!result?.error) {
+      const selected = groceryPickerRef.current?.getSelected() ?? [];
+      if (selected.length > 0) await addIngredientsToGroceriesAction(selected);
+      onDone();
+    }
     return result;
   }, undefined);
 
@@ -178,6 +185,11 @@ function MealEditForm({
   const [instructions, setInstructions] = useState(meal.instructions.join("\n"));
   const [imageUrl, setImageUrl] = useState(meal.imageUrl ?? "");
   const [sourceUrl, setSourceUrl] = useState(meal.sourceUrl ?? "");
+
+  const ingredientLines = ingredients
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
 
   return (
     <form action={formAction} className="space-y-3">
@@ -230,6 +242,7 @@ function MealEditForm({
           className="w-full resize-none rounded-lg border border-sage-200 px-3 py-2 text-sm outline-none focus:border-sage-400"
         />
       </div>
+      <IngredientGroceryPicker ref={groceryPickerRef} ingredients={ingredientLines} />
       <div>
         <label className="mb-1 block text-xs font-medium text-ink-500">Bereidingswijze (één stap per regel)</label>
         <textarea

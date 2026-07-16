@@ -1,10 +1,12 @@
 "use client";
 
-import { useActionState, useState, useTransition } from "react";
+import { useActionState, useRef, useState, useTransition } from "react";
 import { Clock, ExternalLink, HeartOff, CalendarPlus } from "lucide-react";
 import { addRecipeToDayAction, unfavoriteMealAction } from "@/lib/actions/meals";
+import { addIngredientsToGroceriesAction } from "@/lib/actions/groceries";
 import { Modal } from "@/components/dashboard/Modal";
 import { MealThumbnail } from "@/components/dashboard/MealThumbnail";
+import { IngredientGroceryPicker, type IngredientGroceryPickerHandle } from "@/components/dashboard/IngredientGroceryPicker";
 
 type Recipe = {
   id: string;
@@ -85,7 +87,12 @@ export function RecipeCard({ recipe, defaultDate }: { recipe: Recipe; defaultDat
             </a>
           )}
 
-          <AddToDayForm mealId={recipe.id} defaultDate={defaultDate} onDone={() => setOpen(false)} />
+          <AddToDayForm
+            mealId={recipe.id}
+            ingredients={recipe.ingredients}
+            defaultDate={defaultDate}
+            onDone={() => setOpen(false)}
+          />
 
           <button
             type="button"
@@ -103,23 +110,31 @@ export function RecipeCard({ recipe, defaultDate }: { recipe: Recipe; defaultDat
 
 function AddToDayForm({
   mealId,
+  ingredients,
   defaultDate,
   onDone,
 }: {
   mealId: string;
+  ingredients: string[];
   defaultDate: string;
   onDone: () => void;
 }) {
+  const groceryPickerRef = useRef<IngredientGroceryPickerHandle>(null);
   const addToDay = addRecipeToDayAction.bind(null, mealId);
   const [state, formAction, pending] = useActionState(async (prevState: unknown, formData: FormData) => {
     const result = await addToDay(prevState as never, formData);
-    if (!result?.error) onDone();
+    if (!result?.error) {
+      const selected = groceryPickerRef.current?.getSelected() ?? [];
+      if (selected.length > 0) await addIngredientsToGroceriesAction(selected);
+      onDone();
+    }
     return result;
   }, undefined);
 
   return (
     <form action={formAction} className="space-y-2 border-t border-sage-100 pt-3">
       {state?.error && <p className="text-xs text-[#a35b36]">{state.error}</p>}
+      <IngredientGroceryPicker ref={groceryPickerRef} ingredients={ingredients} />
       <div className="flex items-center gap-2">
         <input
           name="date"
