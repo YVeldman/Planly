@@ -37,6 +37,15 @@ export default async function RewardsPage() {
   );
   const balanceByChild = new Map(balances.map((b) => [b.childId, b.balance]));
 
+  const redemptions = await prisma.pointTransaction.findMany({
+    where: {
+      rewardItemId: { not: null },
+      userId: { in: children.map((c) => c.id) },
+    },
+    select: { userId: true, rewardItemId: true },
+  });
+  const redeemedKeys = redemptions.map((r) => `${r.userId}:${r.rewardItemId}`);
+
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <div>
@@ -71,6 +80,7 @@ export default async function RewardsPage() {
             <RewardShop
               items={rewardItems}
               kids={children.map((c) => ({ id: c.id, name: c.name }))}
+              redeemedKeys={redeemedKeys}
             />
           </section>
         </>

@@ -121,6 +121,7 @@ export async function redeemRewardAction(childId: string, rewardItemId: string) 
       userId: childId,
       amount: -item.pointCost,
       reason: `Ingewisseld: ${item.name}`,
+      rewardItemId: item.id,
     },
   });
 

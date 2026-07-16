@@ -1,13 +1,23 @@
 "use client";
 
 import { useActionState, useState, useTransition } from "react";
-import { Plus, Trash2, X } from "lucide-react";
+import { Check, Plus, Trash2, X } from "lucide-react";
 import { createRewardItemAction, deleteRewardItemAction, redeemRewardAction } from "@/lib/actions/rewards";
 
 type Child = { id: string; name: string };
 type RewardItem = { id: string; name: string; pointCost: number; emoji: string | null };
 
-export function RewardShop({ items, kids }: { items: RewardItem[]; kids: Child[] }) {
+export function RewardShop({
+  items,
+  kids,
+  redeemedKeys,
+}: {
+  items: RewardItem[];
+  kids: Child[];
+  redeemedKeys: string[];
+}) {
+  const redeemedSet = new Set(redeemedKeys);
+
   return (
     <div className="space-y-3">
       {items.length === 0 && (
@@ -15,22 +25,35 @@ export function RewardShop({ items, kids }: { items: RewardItem[]; kids: Child[]
           Nog niks in de winkel. Voeg een beloning toe.
         </p>
       )}
-      {items.map((item) => (
-        <RewardItemRow key={item.id} item={item} kids={kids} />
-      ))}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {items.map((item) => (
+          <RewardItemCard key={item.id} item={item} kids={kids} redeemedSet={redeemedSet} />
+        ))}
+      </div>
       <AddRewardItemForm />
     </div>
   );
 }
 
-function RewardItemRow({ item, kids }: { item: RewardItem; kids: Child[] }) {
+function RewardItemCard({
+  item,
+  kids,
+  redeemedSet,
+}: {
+  item: RewardItem;
+  kids: Child[];
+  redeemedSet: Set<string>;
+}) {
   const [isPending, startTransition] = useTransition();
   const [childId, setChildId] = useState(kids[0]?.id ?? "");
   const [error, setError] = useState<string | null>(null);
 
+  const selectedChild = kids.find((c) => c.id === childId);
+  const alreadyRedeemed = childId ? redeemedSet.has(`${childId}:${item.id}`) : false;
+
   return (
-    <div className="rounded-xl border border-sage-200 bg-white p-4">
-      <div className="flex items-center gap-3">
+    <div className="flex flex-col rounded-xl border border-sage-200 bg-white p-4">
+      <div className="flex items-start gap-3">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-peach-100 text-lg">
           {item.emoji || "🎁"}
         </div>
@@ -49,7 +72,7 @@ function RewardItemRow({ item, kids }: { item: RewardItem; kids: Child[] }) {
         </button>
       </div>
       {kids.length > 0 && (
-        <div className="mt-3 flex items-center gap-2 border-t border-sage-100 pt-3">
+        <div className="mt-3 space-y-2 border-t border-sage-100 pt-3">
           <select
             value={childId}
             onChange={(e) => setChildId(e.target.value)}
@@ -61,6 +84,11 @@ function RewardItemRow({ item, kids }: { item: RewardItem; kids: Child[] }) {
               </option>
             ))}
           </select>
+          {alreadyRedeemed && (
+            <p className="flex items-center gap-1.5 text-xs font-medium text-sage-600">
+              <Check className="h-3.5 w-3.5" /> Al ingewisseld voor {selectedChild?.name}
+            </p>
+          )}
           <button
             type="button"
             disabled={isPending || !childId}
@@ -71,9 +99,9 @@ function RewardItemRow({ item, kids }: { item: RewardItem; kids: Child[] }) {
                 if (result?.error) setError(result.error);
               })
             }
-            className="shrink-0 rounded-lg bg-sage-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-sage-700 disabled:opacity-60"
+            className="w-full rounded-lg bg-sage-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-sage-700 disabled:opacity-60"
           >
-            Wissel in
+            {alreadyRedeemed ? "Nog een keer inwisselen" : "Wissel in"}
           </button>
         </div>
       )}

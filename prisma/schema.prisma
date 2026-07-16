@@ -156,6 +156,8 @@ model RewardItem {
 
   familyId String
   family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  redemptions PointTransaction[]
 }
 
 model PointTransaction {
@@ -166,6 +168,9 @@ model PointTransaction {
 
   userId String
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  rewardItemId String?
+  rewardItem   RewardItem? @relation(fields: [rewardItemId], references: [id], onDelete: SetNull)
 }
 
 model GroceryItem {
