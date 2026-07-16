@@ -69,6 +69,7 @@ export async function createMealAction(
 
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/meals");
+  revalidatePath("/dashboard/recipes");
 }
 
 export async function updateMealAction(
@@ -113,6 +114,7 @@ export async function updateMealAction(
 
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/meals");
+  revalidatePath("/dashboard/recipes");
 }
 
 export async function deleteMealAction(id: string) {
@@ -120,4 +122,56 @@ export async function deleteMealAction(id: string) {
   await prisma.meal.deleteMany({ where: { id, familyId: user.familyId } });
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/meals");
+  revalidatePath("/dashboard/recipes");
+}
+
+export async function unfavoriteMealAction(title: string) {
+  const user = await requireUser();
+  await prisma.meal.updateMany({
+    where: { title, familyId: user.familyId, favorite: true },
+    data: { favorite: false },
+  });
+  revalidatePath("/dashboard/recipes");
+  revalidatePath("/dashboard/meals");
+}
+
+const addToDaySchema = z.object({
+  date: z.string().min(1, "Kies een dag."),
+});
+
+export async function addRecipeToDayAction(
+  sourceMealId: string,
+  _prevState: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  const user = await requireUser();
+
+  const parsed = addToDaySchema.safeParse({ date: formData.get("date") });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Ongeldige invoer." };
+  }
+
+  const source = await prisma.meal.findFirst({ where: { id: sourceMealId, familyId: user.familyId } });
+  if (!source) {
+    return { error: "Recept niet gevonden." };
+  }
+
+  await prisma.meal.create({
+    data: {
+      title: source.title,
+      date: zonedMidnight(parsed.data.date),
+      prepTime: source.prepTime,
+      notes: source.notes,
+      favorite: true,
+      ingredients: source.ingredients,
+      instructions: source.instructions,
+      imageUrl: source.imageUrl,
+      sourceUrl: source.sourceUrl,
+      familyId: user.familyId,
+    },
+  });
+
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/meals");
+  revalidatePath("/dashboard/recipes");
 }

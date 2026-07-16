@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, CalendarDays, CheckCircle2, UtensilsCrossed, ShoppingCart, Gift, Contact, Settings } from "lucide-react";
+import { Home, CalendarDays, CheckCircle2, UtensilsCrossed, Heart, ShoppingCart, Gift, Contact, Settings } from "lucide-react";
 
 const items = [
   { href: "/dashboard", label: "Home", icon: Home },
   { href: "/dashboard/calendar", label: "Agenda", icon: CalendarDays },
   { href: "/dashboard/meals", label: "Maaltijden", icon: UtensilsCrossed },
+  { href: "/dashboard/recipes", label: "Mijn recepten", icon: Heart },
   { href: "/dashboard/groceries", label: "Boodschappen", icon: ShoppingCart },
   { href: "/dashboard/tasks", label: "Taken", icon: CheckCircle2 },
   { href: "/dashboard/rewards", label: "Beloningen", icon: Gift },
