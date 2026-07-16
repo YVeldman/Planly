@@ -12,7 +12,19 @@ const mealSchema = z.object({
   prepTime: z.string().optional(),
   notes: z.string().trim().optional(),
   favorite: z.string().optional(),
+  ingredients: z.string().optional(),
+  instructions: z.string().optional(),
+  imageUrl: z.string().trim().optional(),
+  sourceUrl: z.string().trim().optional(),
 });
+
+function linesToList(value: string | undefined): string[] {
+  if (!value) return [];
+  return value
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
 
 export type ActionState = { error?: string } | undefined;
 
@@ -28,13 +40,17 @@ export async function createMealAction(
     prepTime: formData.get("prepTime") || undefined,
     notes: formData.get("notes") || undefined,
     favorite: formData.get("favorite") || undefined,
+    ingredients: formData.get("ingredients") || undefined,
+    instructions: formData.get("instructions") || undefined,
+    imageUrl: formData.get("imageUrl") || undefined,
+    sourceUrl: formData.get("sourceUrl") || undefined,
   });
 
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Ongeldige invoer." };
   }
 
-  const { title, date, prepTime, notes, favorite } = parsed.data;
+  const { title, date, prepTime, notes, favorite, ingredients, instructions, imageUrl, sourceUrl } = parsed.data;
 
   await prisma.meal.create({
     data: {
@@ -43,6 +59,10 @@ export async function createMealAction(
       prepTime: prepTime ? Number(prepTime) : null,
       notes: notes || null,
       favorite: favorite === "on",
+      ingredients: linesToList(ingredients),
+      instructions: linesToList(instructions),
+      imageUrl: imageUrl || null,
+      sourceUrl: sourceUrl || null,
       familyId: user.familyId,
     },
   });
@@ -64,13 +84,17 @@ export async function updateMealAction(
     prepTime: formData.get("prepTime") || undefined,
     notes: formData.get("notes") || undefined,
     favorite: formData.get("favorite") || undefined,
+    ingredients: formData.get("ingredients") || undefined,
+    instructions: formData.get("instructions") || undefined,
+    imageUrl: formData.get("imageUrl") || undefined,
+    sourceUrl: formData.get("sourceUrl") || undefined,
   });
 
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Ongeldige invoer." };
   }
 
-  const { title, date, prepTime, notes, favorite } = parsed.data;
+  const { title, date, prepTime, notes, favorite, ingredients, instructions, imageUrl, sourceUrl } = parsed.data;
 
   await prisma.meal.updateMany({
     where: { id, familyId: user.familyId },
@@ -80,6 +104,10 @@ export async function updateMealAction(
       prepTime: prepTime ? Number(prepTime) : null,
       notes: notes || null,
       favorite: favorite === "on",
+      ingredients: linesToList(ingredients),
+      instructions: linesToList(instructions),
+      imageUrl: imageUrl || null,
+      sourceUrl: sourceUrl || null,
     },
   });
 
