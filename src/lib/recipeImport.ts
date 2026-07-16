@@ -77,8 +77,10 @@ function requestOnce(
         method: "GET",
         headers: { "User-Agent": USER_AGENT, Accept: "text/html", Host: url.hostname },
         // Pin the connection to the pre-validated IP instead of re-resolving the hostname.
+        // Node's default happy-eyeballs connect path always calls this with `all: true`
+        // and expects the array form of the callback, so always answer with one.
         lookup: (_hostname, _options, callback) => {
-          callback(null, pinned.address, pinned.family);
+          callback(null, [{ address: pinned.address, family: pinned.family }]);
         },
         timeout: FETCH_TIMEOUT_MS,
       },
